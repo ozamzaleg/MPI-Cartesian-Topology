@@ -65,5 +65,5 @@ int main(int argc, char *argv[])
     free(subString);
 
     MPI_Finalize();
-    return 0;
+    return EXIT_SUCCESS;
 }
