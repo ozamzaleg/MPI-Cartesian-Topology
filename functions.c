@@ -153,6 +153,12 @@ void shuffleMatrix(char *strings, int maxIterations, char *odd, char *even, MPI_
     MPI_Status status;
 
     int *subArray = (int *)calloc(nprocs, sizeof(int));
+    
+     if (subArray == NULL)
+    {
+        fprintf(stderr, "malloc failed\n");
+        MPI_Abort(MPI_COMM_WORLD, 1);
+    }
 
     while (finishTask < maxIterations && TAG_WORK == WORK)
     {
