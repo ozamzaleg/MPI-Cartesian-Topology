@@ -4,6 +4,7 @@
 #include <math.h>
 #include <string.h>
 #include "functions.h"
+
 // check if the number of process that we enter is equal to the input from the file
 void checkParameter(int K, int nprocs)
 {
