@@ -40,6 +40,6 @@ int checkIfExist(int *subArray, int nprocs);
 void printExistResult(char *strings, char *subString, char *res, int nprocs, int N);
 char *getOddEvenFromNeighbor(char *odd, char *even, char *string, int N, int right, int left, int down, int up, MPI_Comm cart_comm);
 void informMasterIfExist(int *found, int rank, char *string, MPI_Comm cart_comm, int N, char **res, char *subString, int *TAG_WORK);
-void checkTag(int TAG_WORK, char *res, int N, MPI_Comm cart_comm, MPI_Status status, char *strings, char *subString, int nprocs);
+int checkTag(int TAG_WORK, char *res, int N, MPI_Comm cart_comm, MPI_Status status, char *strings, char *subString, int nprocs);
 
 #endif
