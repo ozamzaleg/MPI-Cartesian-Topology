@@ -153,20 +153,21 @@ void informMasterIfExist(int *found, int rank, char *string, MPI_Comm cart_comm,
             strcpy(*res, string);
     }
 }
-void checkTag(int TAG_WORK, char *res, int N, MPI_Comm cart_comm, MPI_Status status, char *strings, char *subString, int nprocs)
+int checkTag(int tag, char *res, int N, MPI_Comm cart_comm, MPI_Status status, char *strings, char *subString, int nprocs)
 {
-    if (TAG_WORK != STOP)
+    if (tag != STOP)
     {
         MPI_Recv(res, N * 2, MPI_CHAR, MPI_ANY_SOURCE, MPI_ANY_TAG, cart_comm, &status);
-        TAG_WORK = status.MPI_TAG;
+        tag = status.MPI_TAG;
     }
-    if (TAG_WORK == STOP)
+    if (tag == STOP)
         printExistResult(strings, subString, res, nprocs, N);
+    return tag;
 }
 // check if theree substring in the string that came from right and down neighbored
 void shuffleMatrix(char *strings, int maxIterations, char *odd, char *even, MPI_Comm cart_comm, char *string, int N, int right, int left, int down, int up, int rank, char *subString, char *res, int nprocs)
 {
-    int TAG_WORK = WORK;
+    int tag = WORK;
     int finishTask = 0;
     int found = NO;
     int isExist = NO;
@@ -180,12 +181,12 @@ void shuffleMatrix(char *strings, int maxIterations, char *odd, char *even, MPI_
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
-    while (finishTask < maxIterations && TAG_WORK == WORK)
+    while (finishTask < maxIterations && tag == WORK)
     {
 
         string = getOddEvenFromNeighbor(odd, even, string, N, right, left, down, up, cart_comm);
 
-        informMasterIfExist(&found, rank, string, cart_comm, N, &res, subString, &TAG_WORK);
+        informMasterIfExist(&found, rank, string, cart_comm, N, &res, subString, &tag);
         // i use this function for create array that the number of cell is the number of process
         MPI_Allgather(&found, 1, MPI_INT, subArray, 1, MPI_INT, cart_comm);
 
@@ -196,14 +197,14 @@ void shuffleMatrix(char *strings, int maxIterations, char *odd, char *even, MPI_
             MPI_Gather(string, N * 2, MPI_CHAR, strings, N * 2, MPI_CHAR, MASTER, cart_comm);
 
             if (rank == MASTER)
-                checkTag(TAG_WORK, res, N, cart_comm, status, strings, subString, nprocs);
+                tag = checkTag(tag, res, N, cart_comm, status, strings, subString, nprocs);
             break;
         }
         getEvenAndOddArrays(odd, even, N, string);
         finishTask++;
     }
 
-    if (rank == MASTER && TAG_WORK == WORK)
+    if (rank == MASTER && tag == WORK)
         printf("The substring is not exist!\n");
 
     free(subArray);
