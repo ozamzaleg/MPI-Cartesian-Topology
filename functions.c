@@ -141,14 +141,14 @@ char *getOddEvenFromNeighbor(char *odd, char *even, char *string, int N, int rig
 
     return string;
 }
-void informMasterIfExist(int *found, int rank, char *string, MPI_Comm cart_comm, int N, char **res, char *subString, int *TAG_WORK)
+void informMasterIfExist(int *found, int rank, char *string, MPI_Comm cart_comm, int N, char **res, char *subString, int *tag)
 {
     if (strstr(string, subString) != NULL)
     {
         *found = YES;
-        *TAG_WORK = STOP;
+        *tag = STOP;
         if (rank != MASTER)
-            MPI_Send(string, N * 2, MPI_CHAR, MASTER, *TAG_WORK, cart_comm);
+            MPI_Send(string, N * 2, MPI_CHAR, MASTER, *tag, cart_comm);
         else
             strcpy(*res, string);
     }
